@@ -1,0 +1,17 @@
+[package]
+name = "modbus_pub"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio-modbus = { version = "*", default-features = false, features = ["tcp"] }
+tokio = { version = "*", features = ["full"] }
+async-trait = "0.1.86"
+sqlx = { version = "0.8.3", features = [
+    "runtime-tokio-native-tls",
+    "postgres",
+] }
+dotenv = "0.15.0"
+rumqttc = "0.24.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"

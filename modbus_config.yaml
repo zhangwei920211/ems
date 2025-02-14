@@ -1,0 +1,4 @@
+gateways:
+- ip: ''
+  port: 0
+  slave_ids: []
