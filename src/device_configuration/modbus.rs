@@ -20,50 +20,39 @@ pub struct Config {
     pub gateways: Vec<ModbusDevice>,
 }
 
-// 默认配置
-fn default_config() -> Config {
-    Config {
-        gateways: vec![ModbusDevice {
-            ip: "模板".to_string(),
-            port: 0,
-            slave_ids: vec![],
-        }],
-    }
-}
-
 // 读取并解析 YAML 文件的函数
 pub fn read_config(file_path: &str) -> Result<Config, Box<dyn std::error::Error>> {
     let path = Path::new(file_path);
 
-    // 如果文件不存在，创建默认配置并写入
+    // 如果文件不存在，创建空配置文件
     if !path.try_exists()? {
-        let default = default_config();
-        let yaml = serde_yaml::to_string(&default)?; // 将默认配置序列化为 YAML 字符串
+        // 创建空的配置结构
+        let empty_config = Config {
+            gateways: Vec::new(),
+        };
 
-        // 使用 OpenOptions 创建文件并写入默认配置
+        // 序列化为 YAML
+        let yaml = serde_yaml::to_string(&empty_config)?;
+
+        // 创建文件并写入空配置
         let mut file = OpenOptions::new()
-            .create(true) // 如果文件不存在，则创建
-            .write(true) // 以写入模式打开文件
-            .truncate(true) // 清空文件内容（如果已存在）
+            .create(true)
+            .write(true)
+            .truncate(true)
             .open(file_path)?;
 
-        // 写入默认配置
         file.write_all(yaml.as_bytes())?;
-
-        println!("配置文件不存在，已创建默认配置文件: {}", file_path);
-        return Ok(default); // 返回默认配置
+        println!("配置文件不存在，已创建空配置文件: {}", file_path);
+        return Ok(empty_config);
     }
 
-    // 打开 YAML 文件
+    // 打开并读取现有配置文件
     let mut file = File::open(file_path)?;
-
-    // 读取文件内容
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
-    // 解析 YAML 内容为 Config 结构体
+    // 解析 YAML 内容
     let config: Config = serde_yaml::from_str(&contents)?;
 
-    // 返回解析结果
     Ok(config)
 }
