@@ -1,5 +1,3 @@
-// src/config.rs
-
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::fs::{File, OpenOptions};
